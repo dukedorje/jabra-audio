@@ -258,7 +258,7 @@ async def _voice_clone_via_runpod(
         )
 
         def _do_request():
-            return urllib.request.urlopen(req, timeout=120)
+            return urllib.request.urlopen(req, timeout=10)
 
         resp = await loop.run_in_executor(None, _do_request)
         result = json.loads(resp.read().decode("utf-8"))
