@@ -25,8 +25,9 @@ RUN curl -fsSL \
     apt-get update && apt-get install -y --no-install-recommends unzip && \
     unzip -q /tmp/qwen3.zip -d /tmp/qwen3_extract && \
     mkdir -p /app/bin && \
-    cp /tmp/qwen3_extract/qwen3_tts_rs/tts /tmp/qwen3_extract/qwen3_tts_rs/voice_clone /tmp/qwen3_extract/qwen3_tts_rs/api_server /app/bin/ && \
-    cp -r /tmp/qwen3_extract/qwen3_tts_rs/libtorch /app/libtorch && \
+    QWEN_DIR=/tmp/qwen3_extract/qwen3-tts-linux-x86_64 && \
+    cp "$QWEN_DIR/tts" "$QWEN_DIR/voice_clone" "$QWEN_DIR/api_server" /app/bin/ && \
+    cp -r "$QWEN_DIR/libtorch" /app/libtorch && \
     rm -rf /tmp/qwen3.zip /tmp/qwen3_extract && \
     apt-get remove -y unzip && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
