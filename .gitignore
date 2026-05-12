@@ -1,0 +1,6 @@
+# Build artifacts (models, binaries, libtorch)
+qwen3_tts_rs/
+*.wav
+*.mp3
+__pycache__/
+*.pyc
