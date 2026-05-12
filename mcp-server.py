@@ -28,6 +28,7 @@ from pathlib import Path
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent
 
 # ── Configuration ───────────────────────────────────────────────────────────
 
@@ -470,13 +471,13 @@ app = Server("jabra-voice-ears")
 @app.list_tools()
 async def list_tools():
     return [
-        {
-            "name": "voice_speak",
-            "description": (
+        Tool(
+            name="voice_speak",
+            description=(
                 "Speak text aloud through the Jabra SPEAK 510 USB speaker. "
                 "Uses Microsoft edge-tts for natural-sounding speech synthesis."
             ),
-            "inputSchema": {
+            inputSchema={
                 "type": "object",
                 "properties": {
                     "text": {
@@ -486,16 +487,16 @@ async def list_tools():
                 },
                 "required": ["text"],
             },
-        },
-        {
-            "name": "voice_clone",
-            "description": (
+        ),
+        Tool(
+            name="voice_clone",
+            description=(
                 "Clone a voice from reference audio and speak text in that voice. "
                 "Sends reference audio to RunPod GPU (fast Qwen3-TTS inference). "
                 "Requires RunPod configured in ~/.hermes/jabra-runpod.env. "
                 "Falls back to slow local CPU if RunPod unavailable."
             ),
-            "inputSchema": {
+            inputSchema={
                 "type": "object",
                 "properties": {
                     "text": {
@@ -519,14 +520,14 @@ async def list_tools():
                 },
                 "required": ["text", "ref_audio"],
             },
-        },
-        {
-            "name": "voice_play",
-            "description": (
+        ),
+        Tool(
+            name="voice_play",
+            description=(
                 "Play an audio file (WAV, MP3, OGG, etc.) through the "
                 "Jabra SPEAK 510 USB speaker."
             ),
-            "inputSchema": {
+            inputSchema={
                 "type": "object",
                 "properties": {
                     "path": {
@@ -536,22 +537,22 @@ async def list_tools():
                 },
                 "required": ["path"],
             },
-        },
-        {
-            "name": "voice_stop",
-            "description": "Stop any audio currently playing through the Jabra speaker.",
-            "inputSchema": {
+        ),
+        Tool(
+            name="voice_stop",
+            description="Stop any audio currently playing through the Jabra speaker.",
+            inputSchema={
                 "type": "object",
                 "properties": {},
             },
-        },
-        {
-            "name": "ears_listen",
-            "description": (
+        ),
+        Tool(
+            name="ears_listen",
+            description=(
                 "Listen through the Jabra SPEAK 510 USB microphone and "
                 "transcribe what is heard. Returns the recognized text."
             ),
-            "inputSchema": {
+            inputSchema={
                 "type": "object",
                 "properties": {
                     "duration_seconds": {
@@ -563,18 +564,18 @@ async def list_tools():
                     },
                 },
             },
-        },
-        {
-            "name": "ears_status",
-            "description": (
+        ),
+        Tool(
+            name="ears_status",
+            description=(
                 "Check whether the Jabra SPEAK 510 USB is connected "
                 "and report its speaker/mic state."
             ),
-            "inputSchema": {
+            inputSchema={
                 "type": "object",
                 "properties": {},
             },
-        },
+        ),
     ]
 
 
@@ -583,7 +584,7 @@ async def call_tool(name: str, arguments: dict) -> list:
     if name == "voice_speak":
         text = arguments.get("text", "")
         result = await _tts_and_play(text)
-        return [{"type": "text", "text": result}]
+        return [TextContent(type="text", text=result)]
 
     elif name == "voice_clone":
         text = arguments.get("text", "")
@@ -593,32 +594,32 @@ async def call_tool(name: str, arguments: dict) -> list:
         result = await _voice_clone_via_runpod(text, ref_audio, ref_text)
         if "RunPod not configured" in result or "RunPod request failed" in result:
             result = await _voice_clone_local_fallback(text, ref_audio, ref_text)
-        return [{"type": "text", "text": result}]
+        return [TextContent(type="text", text=result)]
 
     elif name == "voice_play":
         path = arguments.get("path", "")
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(None, _play_audio_file, path)
-        return [{"type": "text", "text": result}]
+        return [TextContent(type="text", text=result)]
 
     elif name == "voice_stop":
         loop = asyncio.get_running_loop()
         loop.run_in_executor(None, _stop_playback)
-        return [{"type": "text", "text": "Playback stopped"}]
+        return [TextContent(type="text", text="Playback stopped")]
 
     elif name == "ears_listen":
         duration = arguments.get("duration_seconds", 5)
         duration = max(1, min(60, duration))
         result = await _stt_from_mic(duration)
-        return [{"type": "text", "text": result}]
+        return [TextContent(type="text", text=result)]
 
     elif name == "ears_status":
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(None, _device_status)
-        return [{"type": "text", "text": result}]
+        return [TextContent(type="text", text=result)]
 
     else:
-        return [{"type": "text", "text": f"Unknown tool: {name}"}]
+        return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
 
 async def main():
