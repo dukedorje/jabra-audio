@@ -49,7 +49,7 @@ print('All models downloaded');\
 "
 
 # Copy handler
-COPY handler.py /app/handler.py
+COPY runpod/handler.py /app/handler.py
 
 WORKDIR /app
 

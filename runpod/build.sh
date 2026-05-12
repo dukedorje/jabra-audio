@@ -7,13 +7,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 IMAGE_NAME="qwen3-tts-runpod:0.6B-v1"
 
 echo "=== Building Docker image (this will take 10+ min on first run) ==="
-docker build -t "$IMAGE_NAME" "$SCRIPT_DIR"
+# Build from project root (same context as RunPod GitHub deploy)
+docker build -t "$IMAGE_NAME" -f "$SCRIPT_DIR/Dockerfile" "$SCRIPT_DIR/.."
 
 echo ""
 echo "=== Image built: $IMAGE_NAME ==="
 echo ""
 echo "To test locally:"
-echo "  docker run --rm -p 8080:8080 $IMAGE_NAME"
+echo "  docker run --rm $IMAGE_NAME"
 echo ""
 echo "To deploy to RunPod from GitHub:"
 echo "  1. Push this repo to GitHub"
