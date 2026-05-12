@@ -32,22 +32,9 @@ RUN curl -fsSL \
     apt-get remove -y unzip && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Download Qwen3-TTS 0.6B models from HuggingFace (~4.8GB total)
-RUN python3 -c "\
-from huggingface_hub import snapshot_download;\
-import os;\
-models = [\
-    'Qwen/Qwen3-TTS-12Hz-0.6B-Base',\
-    'Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice',\
-];\
-os.makedirs('/models', exist_ok=True);\
-for m in models:\
-    name = m.split('/')[-1];\
-    dest = f'/models/{name}';\
-    print(f'Downloading {name}...');\
-    snapshot_download(m, local_dir=dest, local_dir_use_symlinks=False);\
-    print(f'Done: {name}');\
-print('All models downloaded');\
-"
+RUN mkdir -p /models && \
+    python3 -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-TTS-12Hz-0.6B-Base', local_dir='/models/Qwen3-TTS-12Hz-0.6B-Base', local_dir_use_symlinks=False)" && \
+    python3 -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice', local_dir='/models/Qwen3-TTS-12Hz-0.6B-CustomVoice', local_dir_use_symlinks=False)"
 
 # Copy handler
 COPY runpod/handler.py /app/handler.py

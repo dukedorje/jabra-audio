@@ -4,3 +4,4 @@ qwen3_tts_rs/
 *.mp3
 __pycache__/
 *.pyc
+.omc
