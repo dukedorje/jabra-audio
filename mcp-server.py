@@ -35,7 +35,7 @@ from mcp.server.stdio import stdio_server
 RUNPOD_ENDPOINT_ID = os.environ.get("RUNPOD_ENDPOINT_ID", "")
 RUNPOD_API_KEY = os.environ.get("RUNPOD_API_KEY", "")
 RUNPOD_URL = (
-    f"https://api.runpod.ai/v2/{RUNPOD_ENDPOINT_ID}/runsync"
+    f"https://{RUNPOD_ENDPOINT_ID}.api.runpod.ai/v2/runsync"
     if RUNPOD_ENDPOINT_ID
     else ""
 )
@@ -52,7 +52,7 @@ if _ENV_FILE.exists():
             os.environ[key] = val
             if key == "RUNPOD_ENDPOINT_ID":
                 RUNPOD_ENDPOINT_ID = val
-                RUNPOD_URL = f"https://api.runpod.ai/v2/{val}/runsync"
+                RUNPOD_URL = f"https://{val}.api.runpod.ai/v2/runsync"
             elif key == "RUNPOD_API_KEY":
                 RUNPOD_API_KEY = val
 
